@@ -473,7 +473,10 @@ html, body { min-height: 100%; overflow: hidden; }
 });
 window.addEventListener('orientationchange', () => {
     setTimeout(()=>{
-        document.body.offsetHeight;
+        document.querySelector('.preset-grid').style.display = 'none';
+        document.querySelector('.preset-grid').offsetHeight;
+        document.querySelector('.preset-grid').style.display = 'grid';
+        
         checkResolution();
     },300);
 });
