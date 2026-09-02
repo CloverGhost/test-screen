@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="免费、无广告的在线屏幕检测与高级补光工具。一键全屏切换红绿蓝纯色背景，精准检测手机、电脑、平板显示器的坏点、漏光和烧屏；提供高级高亮纯白补光画面，支持亮度微调，是您直播、自拍、静物拍摄的随身纯白补光灯">
     <title>在线屏幕检测工具_专业屏幕坏点测试_纯色背景全屏补光灯</title>
 </head>
@@ -107,21 +107,21 @@
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
     body, html { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; transition: background-color 0.1s ease; background-color: #ffffff; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     #brightness-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #000; opacity: 0; pointer-events: none; z-index: 2; transition: opacity 0.05s linear; }
-    .ios-viewport-lock { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999 !important; }
+    .ios-viewport-lock { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; width: 100dvw !important; height: 100dvh !important; z-index: 99999 !important; }
     #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer; background-repeat: repeat; touch-action: none; }
     
     .control-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 16px; padding: min(20px, 4.5vw); width: 92%; max-width: 440px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0, 0, 0, 0.06); }
     .control-panel.hidden { opacity: 0; transform: translate(-50%, -48%) scale(0.96); pointer-events: none; }
-    h3 { margin-bottom: 8px; color: #1d1d1f; text-align: center; font-size: min(17px, 4.5vw); font-weight: 600; }
+    h3 { margin-bottom: 8px; color: #1d1d1f; text-align: center; font-size: min(21px, 5.2vw); font-weight: 600; }
     .resolution-dashboard { background: rgba(0, 0, 0, 0.03); border-radius: 10px; padding: min(10px, 2.5vw) min(12px, 3vw); margin-bottom: min(10px, 2.5vw); border: 1px solid rgba(0, 0, 0, 0.04); }
-    .res-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: min(12px, 3.4vw); }
+    .res-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: min(13px, 3.6vw); }
     .res-label { color: #6e6e73; }
     .res-val { font-family: monospace; font-weight: 600; color: #1d1d1f; }
-    .res-status { font-size: min(11px, 3.2vw); font-weight: 600; text-align: center; margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(0,0,0,0.08); }
-    .color-name-display { text-align: center; font-size: min(13px, 3.8vw); color: #0071e3; font-weight: 500; margin-bottom: min(10px, 2.5vw); min-height: 18px; }
-    .section-title { font-size: min(11px, 3vw); color: #6e6e73; margin: min(10px, 2.5vw) 0 5px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .res-status { font-size: min(14px, 3.8vw); font-weight: 600; text-align: center; margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(0,0,0,0.08); }
+    .color-name-display { text-align: center; font-size: min(14px, 4vw); color: #0071e3; font-weight: 500; margin-bottom: min(10px, 2.5vw); min-height: 18px; }
+    .section-title { font-size: min(12px, 3.2vw); color: #6e6e73; margin: min(10px, 2.5vw) 0 5px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    .brightness-group { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.03); padding: min(8px, 2vw) min(10px, 2.5vw); border-radius: 10px; font-size: 12px; color: #1d1d1f; font-weight: 500; }
+    .brightness-group { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.03); padding: min(8px, 2vw) min(10px, 2.5vw); border-radius: 10px; font-size: 13px; color: #1d1d1f; font-weight: 500; }
     .brightness-group input[type="range"] { flex: 1; cursor: pointer; height: 5px; accent-color: #0071e3; }
     .brightness-group span { font-family: monospace; width: 36px; text-align: center; display: inline-block; }
 
@@ -131,30 +131,31 @@
     .preset-btn:active { transform: scale(0.94); }
     .rgb-sliders { display: flex; flex-direction: column; gap: min(6px, 1.8vw); background: rgba(0,0,0,0.03); padding: min(10px, 2.5vw); border-radius: 10px; }
     .slider-group { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: space-between; }
-    .slider-group label { width: 12px; font-weight: bold; font-size: 13px; }
+    .slider-group label { width: 12px; font-weight: bold; font-size: 14px; }
     .slider-group input[type="range"] { flex: 1; cursor: pointer; height: 5px; accent-color: currentColor; min-width: 50px; }
 
-    .slider-group input[type="number"] { width: 36px; font-size: 11px; text-align: center; color: #1d1d1f; font-family: monospace; padding: 2px; border: 1px solid #d2d2d7; border-radius: 4px; background: white; outline: none; user-select: text; -webkit-user-select: text; }
+    .slider-group input[type="number"] { width: 36px; font-size: 12px; text-align: center; color: #1d1d1f; font-family: monospace; padding: 2px; border: 1px solid #d2d2d7; border-radius: 4px; background: white; outline: none; user-select: text; -webkit-user-select: text; }
     .slider-group input[type="number"]::-webkit-outer-spin-button, .slider-group input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     
     .download-group { display: flex; gap: 6px; margin-top: 4px; width: 100%; align-items: center; }
-    select, button { padding: 8px min(12px, 3vw); border-radius: 8px; border: 1px solid #d2d2d7; font-size: min(13px, 3.6vw); outline: none; font-family: inherit; }
+    .download-group select { display: flex; align-items: center; line-height: normal; padding-top: 0; padding-bottom: 0; text-align: left !important; text-align-last: left !important; }
+    select, button { padding: 8px min(12px, 3vw); border-radius: 8px; border: 1px solid #d2d2d7; font-size: min(14px, 3.8vw); line-height: 1.2; outline: none; font-family: inherit; }
     select { flex: 1; background: white; cursor: pointer; height: 36px; }
     .btn-primary { background: #0071e3; color: white; border: none; cursor: pointer; font-weight: 500; transition: background 0.2s ease; height: 36px; }
     .btn-primary:hover { background: #0077ed; }
     
     #custom-res-inputs { align-items: center; gap: 4px; margin-top: 6px; background: rgba(0, 0, 0, 0.02); padding: 5px 8px; border-radius: 8px; border: 1px dashed #d2d2d7; width: 100%; }
-    #custom-res-inputs input { flex: 1; padding: 4px; border-radius: 6px; border: 1px solid #d2d2d7; font-size: 11px; font-family: monospace; text-align: center; outline: none; user-select: text; -webkit-user-select: text; min-width: 40px; }
+    #custom-res-inputs input { flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #d2d2d7; font-size: 13px; font-family: monospace; text-align: center; outline: none; user-select: text; -webkit-user-select: text; min-width: 40px; }
     #custom-res-inputs input[type="number"]::-webkit-outer-spin-button, #custom-res-inputs input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     
-    .param-label { font-size: 11px; color: #515154; font-weight: 500; }
-    .param-split { font-size: 11px; color: #6e6e73; font-weight: bold; padding: 0 1px; }
+    .param-label { font-size: 12px; color: #515154; font-weight: 500; }
+    .param-split { font-size: 12px; color: #6e6e73; font-weight: bold; padding: 0 1px; }
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: min(12px, 3vw); }
     .btn-secondary { padding: min(8px, 2.2vw); background: #f5f5f7; color: #1d1d1f; border: none; cursor: pointer; font-weight: 500; transition: background 0.2s ease; }
     .btn-secondary:hover { background: #e8e8ed; }
     .btn-test { grid-column: span 2; padding: min(10px, 2.8vw) 8px; background: #34c759; color: white; font-weight: 600; margin-top: 2px; border: none; cursor: pointer; transition: background 0.2s ease; font-size: min(13px, 3.6vw); }
     .btn-test:hover { background: #28a745; }
-    .tip { font-size: 14px; color: #6e6e73; text-align: center; margin-top: min(10px, 2.2vw); line-height: 1.4; }
+    .tip { font-size: 15px; color: #6e6e73; text-align: center; margin-top: min(10px, 2.2vw); line-height: 1.4; }
     
     #wake-btn { position: fixed; bottom: min(30px, 4vh); left: 50%; transform: translateX(-50%); z-index: 5; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); color: white; border: none; padding: 10px 20px; border-radius: 24px; font-size: 16px; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: max-content; }
     #wake-btn.visible { opacity: 1; pointer-events: auto; }
@@ -173,12 +174,108 @@
     .flash-rgb { animation: breathRGB 0.7s steps(1, end) infinite !important; }
     .motion-block { position: absolute; top: 50%; transform: translateY(-50%); width: 120px; height: 120px; background: #ffffff; border: 2px solid #000000; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
+    @media (min-width:768px) {
+        .control-panel {
+            max-width:480px;
+            padding:24px;
+        }
+    }
+
     @media (max-width: 360px) {
         .control-panel { padding: 12px; } .preset-grid { gap: 3px; } .rgb-sliders { padding: 5px; gap: 5px; } .slider-group input[type="number"] { width: 32px; font-size: 10px; } select, button { padding: 6px 8px; font-size: 11px; }
     }
+
+/* ===== Final UI readability optimization ===== */
+.control-panel h3 {
+    font-size: clamp(22px, 5vw, 25px);
+    line-height: 1.35;
+}
+
+.btn-test {
+    font-size: clamp(16px, 4vw, 18px);
+    line-height: 1.45;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#resolution {
+    line-height: 36px;
+    text-align: center;
+}
+
+#custom-res-inputs input {
+    font-size: 14px;
+    min-height: 34px;
+}
+
+.param-label,
+.param-split {
+    font-size: 13px;
+}
+
+@media (min-width:768px) {
+    .control-panel {
+        max-width: 480px;
+    }
+}
+/* ===== End final UI optimization ===== */
+
+
+/* ===== Final typography balance optimization ===== */
+body, html {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+    font-weight: 400;
+}
+
+.control-panel h3 {
+    font-size: clamp(20px, 4.5vw, 23px);
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.res-label,
+.section-title,
+.param-label,
+.param-split {
+    font-weight: 500;
+}
+
+.res-val,
+.res-status {
+    font-weight: 600;
+}
+
+.color-name-display {
+    font-weight: 500;
+}
+
+.brightness-group,
+.slider-group {
+    font-weight: 500;
+}
+
+select, button, input {
+    font-weight: 500;
+}
+
+#wake-btn {
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.btn-test {
+    font-size: clamp(14px, 3.5vw, 16px);
+    font-weight: 600;
+    line-height: 1.35;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+/* ===== End typography optimization ===== */
+
 </style>
 
 <script>
+    /* Core state and display controller */
     'use strict';
 
     const body = document.body;
@@ -230,7 +327,7 @@
 
         const statusEl = document.getElementById('p2pStatus');
         if (statusEl) {
-            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
             if (Math.abs(renderW - physW) <= 2 && Math.abs(renderH - physH) <= 2) {
                 statusEl.innerText = "🟢 极佳状态：发光晶格点对点完美重合 (测屏最准)";
                 statusEl.style.color = "#34c759";
@@ -258,6 +355,7 @@
 </script>
 
 <script>
+    /* Color control module */
     function updateRGB(source) {
         if (window.isTestingMode) return; 
         if (source === 'input') {
@@ -331,6 +429,12 @@
         } else {
             const parts = resValue.split('x'); width = parseInt(parts[0], 10); height = parseInt(parts[1], 10); 
         }
+        const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
+        if (isMobileDevice && width * height > 9000000) {
+            alert('移动设备建议最高使用4K图片，避免内存不足。');
+            return;
+        }
+
         const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext('2d'); ctx.fillStyle = `rgb(${currentR}, ${currentG}, ${currentB})`; ctx.fillRect(0, 0, width, height);
         try {
@@ -343,6 +447,7 @@
 </script>
 
 <script>
+    /* Device compatibility and wake lock module */
     async function syncWakeLock() {
         const needLock = document.fullscreenElement || body.classList.contains('ios-viewport-lock') || window.isTestingMode;
         if (needLock) {
