@@ -122,7 +122,7 @@
     .section-title { font-size: min(12px, 3.2vw); color: #6e6e73; margin: min(10px, 2.5vw) 0 5px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     
     .brightness-group { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.03); padding: min(8px, 2vw) min(10px, 2.5vw); border-radius: 10px; font-size: 13px; color: #1d1d1f; font-weight: 500; }
-    .brightness-group input[type="range"] { flex: 1; cursor: pointer; height: 5px; accent-color: #0071e3; }
+    .brightness-group input[type="range"] { flex: 1; cursor: pointer; height: 5px; accent-color: #ffd60a; }
     .brightness-group span { font-family: monospace; width: 36px; text-align: center; display: inline-block; }
 
     .preset-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 6px; }
@@ -172,7 +172,13 @@
     @keyframes breathRGB { 0% { background-color: #f00; } 33% { background-color: #0f0; } 66% { background-color: #00f; } 100% { background-color: #f00; } }
     .flash-wb { animation: breathWhiteBlack 0.5s steps(1, end) infinite !important; }
     .flash-rgb { animation: breathRGB 0.7s steps(1, end) infinite !important; }
-    .motion-block { position: absolute; top: 50%; transform: translateY(-50%); width: 120px; height: 120px; background: #ffffff; border: 2px solid #000000; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    .motion-block { position:absolute; top:50%; transform:translateY(-50%); width:120px; height:120px; background:#fff; border:2px solid #000; box-shadow:0 0 10px rgba(0,0,0,.5); will-change:left,transform; }
+.motion-block.square-red { background:#ff3b30; }
+.motion-block.square-green { background:#34c759; }
+.motion-block.square-blue { background:#0a84ff; }
+.motion-block.square-yellow { background:#ffd60a; }
+.motion-block.square-gradient { background:linear-gradient(135deg,#fff,#000); }
+
 
     @media (min-width:768px) {
         .control-panel {
@@ -272,6 +278,28 @@ select, button, input {
 }
 /* ===== End typography optimization ===== */
 
+
+/* ===== Rotation / viewport / panel overflow optimization ===== */
+html, body { min-height: 100%; overflow: hidden; }
+.control-panel {
+    max-height: min(92vh, 900px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.control-panel * { color: inherit; }
+.res-label,.section-title,.param-label,.param-split,.tip { color:#555 !important; }
+.res-val,.res-status,h3,.brightness-group,.slider-group,select,button { color:#1d1d1f; }
+@media (orientation: landscape) and (max-height:600px){
+ .control-panel{max-height:94vh; padding:12px; transform:translate(-50%,-50%) scale(.9);}
+}
+@media (orientation: portrait) and (max-height:700px){
+ .control-panel{max-height:94vh;}
+}
+/* prevent solid blocks after rotation: force repaint */
+#bg-canvas, body { transform: translateZ(0); }
+
 </style>
 
 <script>
@@ -332,11 +360,8 @@ select, button, input {
                 statusEl.innerText = "🟢 极佳状态：发光晶格点对点完美重合 (测屏最准)";
                 statusEl.style.color = "#34c759";
             } else {
-                if (isMobile) {
-                    statusEl.innerText = "🟡 提示：请点击“开始检测”或“全屏”以锁定最佳画质";
-                } else {
-                    statusEl.innerText = `🟡 网页有轻微缩放 (当前 ${dpr.toFixed(1)} 倍渲染) ➜ 建议按 Ctrl+0 恢复默认`;
-                }
+                statusEl.innerText = `🟡 提示：请点击“开始检测”或“全屏”以锁定最佳画质
+🟡 网页有轻微缩放 (当前 ${dpr.toFixed(1)} 倍渲染) ➜ 建议按 Ctrl+0 恢复默认`;
                 statusEl.style.color = "#ff9500";
             }
         }
@@ -430,10 +455,6 @@ select, button, input {
             const parts = resValue.split('x'); width = parseInt(parts[0], 10); height = parseInt(parts[1], 10); 
         }
         const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
-        if (isMobileDevice && width * height > 9000000) {
-            alert('移动设备建议最高使用4K图片，避免内存不足。');
-            return;
-        }
 
         const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
         const ctx = canvas.getContext('2d'); ctx.fillStyle = `rgb(${currentR}, ${currentG}, ${currentB})`; ctx.fillRect(0, 0, width, height);
@@ -443,7 +464,25 @@ select, button, input {
             link.href = canvas.toDataURL('image/png'); link.click();
         } catch (error) { alert('图片生成失败（移动端超高分辨率可能有内存限制）。'); }
     }
-    window.addEventListener('resize', checkResolution);
+    window.addEventListener('resize', () => {
+    requestAnimationFrame(() => {
+        document.body.offsetHeight;
+        bgCanvas.style.display='none';
+        requestAnimationFrame(()=>{ bgCanvas.style.display='block'; checkResolution(); });
+    });
+});
+window.addEventListener('orientationchange', () => {
+    setTimeout(()=>{
+        document.body.offsetHeight;
+        checkResolution();
+    },300);
+});
+window.addEventListener('orientationchange', () => {
+    setTimeout(()=>{
+        if(window.isTestingMode){ renderScene(0); }
+        bgCanvas.style.transform='translateZ(0)';
+    },600);
+});
 </script>
 
 <script>
@@ -481,28 +520,28 @@ select, button, input {
     }
 
     const testScenes = [
-        { type: "color", r: 255, g: 255, b: 255, name: "1/22 纯白基准 (漏光与黑边测试)", desc: "查四角发暗、IPS边缘背光挤压漏光、整体亮度均匀度" },
-        { type: "color", r: 0, g: 0, b: 0, name: "2/22 纯黑基准 (亮点与光晕测试)", desc: "查物理亮点、OLED像素漏光。Mini-LED可在此项查分区控光光晕" },
-        { type: "color", r: 255, g: 0, b: 0, name: "3/22 红色像素 (副像素死点与饱和度)", desc: "检查 R 副像素死点、红纯度表现、OLED 红色老化残留" },
-        { type: "color", r: 0, g: 255, b: 0, name: "4/22 绿色像素 (副像素死点与饱和度)", desc: "检查 G 副像素死点。绿色对人眼最敏感，专查偏色" },
-        { type: "color", r: 0, g: 0, b: 255, name: "5/22 蓝色像素 (副像素死点与饱和度)", desc: "检查 B 副像素死点，防范高能蓝光通道不均匀衰减" },
-        { type: "color", r: 255, g: 255, b: 0, name: "6/22 明黄二级色 (饱和度色彩均匀度)", desc: "检测红绿混合像素供电是否均衡，查 OLED 大面积烧屏残影" },
-        { type: "color", r: 0, g: 255, b: 255, name: "7/22 青色二级色 (色域与双色准度)", desc: "检测绿蓝混合像素准度，评估设计屏的宽色域表现" },
-        { type: "color", r: 255, g: 0, b: 255, name: "8/22 品红二级色 (副像素激发同步性)", desc: "检测红蓝混合副像素激发同步性" },
-        { type: "color", r: 128, g: 128, b: 128, name: "9/22 50%中灰 (脏屏效应 DSE 测试)", desc: "检查背光纸感、屏幕是否有分布不均的黑斑纹理（脏屏效应）" },
-        { type: "pattern", patternType: "gray-16", name: "10/22 16阶标准灰度 (基础对比度与阶梯检测)", desc: "观察能否区分黑白之间16个灰度阶梯，测试屏幕基础对比度" },
-        { type: "pattern", patternType: "gray-64", name: "11/22 64阶精细灰度 (深度色阶解析力)", desc: "考验面板灰阶下潜深度与高光平滑度，防止色彩塌陷" },
-        { type: "pattern", patternType: "gradient-256", name: "12/22 256级全色阶渐变 (色深断层测试)", desc: "评估 8bit/10bit 色深。平滑无痕说明达 10bit，出现明显色带说明渐变过渡可能存在断层" },
-        { type: "pattern", patternType: "gradient-rgb", name: "13/22 RGB全色彩平滑渐变 (广色域过度测试)", desc: "测试红绿蓝及二级色过渡的平滑性，可辅助观察渐变过渡是否平滑" },
-        { type: "pattern", patternType: "gradient-dark", name: "14/22 0%-10% 极暗色阶 (暗部细节测试)", desc: "检测暗部细节吃字情况。高质量屏幕能清晰分辨靠近纯黑的灰色阶" },
-        { type: "pattern", patternType: "gradient-bright", name: "15/22 90%-100% 极亮色阶 (高光细节测试)", desc: "检测高光过曝性能。查过亮色彩是否丢失细节导致死白" },
-        { type: "pattern", patternType: "grid-distortion", name: "16/22 网格与几何畸变 (广角/曲面屏枕形畸变)", desc: "检查画面是否有桶形/枕形畸变，边缘红色包边检测有效显示域" },
-        { type: "pattern", patternType: "grid-1px", name: "17/22 1像素微矩阵 (点对点对焦测试)", desc: "像素硬核对齐。字迹工作者核心，若有彩边毛刺说明发虚易疲劳" },
-        { type: "pattern", patternType: "checker", name: "18/22 极限棋盘格 (边缘对比度测试)", desc: "测试明暗交界处物理对比度边缘锐利度、动态像素残像" },
-        { type: "pattern", patternType: "stripe-h", name: "19/22 水平单像素线阵 (时钟干扰测试)", desc: "检测横向时钟同步。若画面出现水波纹说明高频驱动不稳" },
-        { type: "pattern", patternType: "stripe-v", name: "20/22 垂直单像素线阵 (信号干扰测试)", desc: "检测垂直数据信号延迟，专查行列串扰（Crosstalk拖尾）" },
-        { type: "pattern", patternType: "motion-blur", name: "21/22 动态拖影与响应时间 (方块高速移动测试)", desc: "高对比度方块平滑移动。观察方块后方拖尾长度判断面板响应时间 (GtG)" },
-        { type: "pattern", patternType: "flash-wb", name: "22/22 黑白/三原色高频急变 (电路呼吸效应)", desc: "极限压榨电源板瞬变动态负载。肉眼观察几何图形是否位移抖动" }
+        { type: "color", r: 255, g: 255, b: 255, name: "1/22 白场基准（亮度均匀性与漏光检查）", desc: "检查四角暗化、边缘亮度衰减、IPS漏光及LCD背光均匀性表现" },
+        { type: "color", r: 0, g: 0, b: 0, name: "2/22 黑场基准（黑位与亮点检查）", desc: "检查亮点、暗场均匀性、OLED黑位表现及Mini-LED分区光晕现象" },
+        { type: "color", r: 255, g: 0, b: 0, name: "3/22 R红色纯场（R通道与像素异常检查）", desc: "检查R通道异常、亮点暗点及红色均匀性与偏色情况" },
+        { type: "color", r: 0, g: 255, b: 0, name: "4/22 G绿色纯场（G通道与像素异常检查）", desc: "检查G通道异常、亮点暗点及绿色均匀性与偏色情况" },
+        { type: "color", r: 0, g: 0, b: 255, name: "5/22 B蓝色纯场（B通道与像素异常检查）", desc: "检查B通道异常、亮点暗点及蓝色均匀性与偏色情况" },
+        { type: "color", r: 255, g: 255, b: 0, name: "6/22 Y黄色混合色（二级色混合表现检查）", desc: "检查红绿通道组合显示一致性及黄色区域均匀表现" },
+        { type: "color", r: 0, g: 255, b: 255, name: "7/22 C青色混合色（二级色混合表现检查）", desc: "检查绿蓝通道组合显示一致性及青色区域均匀表现" },
+        { type: "color", r: 255, g: 0, b: 255, name: "8/22 M品红混合色（二级色混合表现检查）", desc: "检查红蓝通道组合显示一致性及品红区域均匀表现" },
+        { type: "color", r: 128, g: 128, b: 128, name: "9/22 50%中灰场（DSE脏屏效应检查）", desc: "检查大面积灰色下亮暗不均、纹理感及屏幕均匀性问题" },
+        { type: "pattern", patternType: "gray-16", name: "10/22 16阶灰度阶梯（基础灰阶表现）", desc: "观察黑白之间灰阶分离能力及基础层次表现" },
+        { type: "pattern", patternType: "gray-64", name: "11/22 64阶灰度阶梯（细节层次表现）", desc: "观察更多灰阶变化，检查暗部、高光及渐变连续性" },
+        { type: "pattern", patternType: "gradient-256", name: "12/22 256阶灰度阶梯（渐变连续性检查）", desc: "观察灰阶过渡是否平滑，检查明显色带及断层现象" },
+        { type: "pattern", patternType: "gradient-rgb", name: "13/22 RGB全色彩渐变（色彩过渡检查）", desc: "测试红绿蓝及混合色渐变连续性，辅助观察色彩过渡表现" },
+        { type: "pattern", patternType: "gradient-dark", name: "14/22 极暗灰阶（暗部细节检查）", desc: "检测接近黑色区域的细节保留能力及暗部层次表现" },
+        { type: "pattern", patternType: "gradient-bright", name: "15/22 极亮灰阶（高光细节检查）", desc: "检测接近白色区域的细节保留能力及高光过渡表现" },
+        { type: "pattern", patternType: "grid-distortion", name: "16/22 网格几何测试（畸变与显示范围检查）", desc: "检查曲面屏、广角视角下几何变化及有效显示区域表现" },
+        { type: "pattern", patternType: "grid-1px", name: "17/22 单像素微矩阵（像素映射与锐度检查）", desc: "检查1:1像素显示、像素排列及文字边缘清晰度表现" },
+        { type: "pattern", patternType: "checker", name: "18/22 极限棋盘格（边缘对比度测试）", desc: "测试明暗交界处物理对比度边缘锐利度、动态像素残像" },
+        { type: "pattern", patternType: "stripe-h", name: "19/22 水平单像素线阵（高频纹理检查）", desc: "观察水平细线显示稳定性及可能出现的干扰纹理" },
+        { type: "pattern", patternType: "stripe-v", name: "20/22 垂直单像素线阵（信号稳定性检查）", desc: "观察垂直细线显示稳定性及可能出现的串扰现象" },
+        { type: "pattern", patternType: "motion-blur", name: "21/22 动态拖影测试（运动响应表现）", desc: "通过高速移动高对比目标观察拖影、残影及运动清晰度表现" },
+        { type: "pattern", patternType: "flash-wb", name: "22/22 黑白快速闪烁（显示稳定性检查）", desc: "观察快速亮暗变化下的闪烁、抖动及异常显示现象" }
     ];
 
     function showTestToast(content, duration = 1800) {
@@ -571,26 +610,78 @@ select, button, input {
                 bgCanvas.style.backgroundSize = "40px 40px";
             }
             else if (scene.patternType === "motion-blur") {
-                body.style.backgroundColor = "#121212";
-                const block = document.createElement('div');
-                block.className = 'motion-block';
-                bgCanvas.appendChild(block);
-                
-                let posX = 0; let speed = 8;
-                function animateMotion() {
-                    posX += speed;
-                    if (posX > window.innerWidth - 120 || posX < 0) speed = -speed;
-                    block.style.left = posX + 'px';
-                    motionAnimId = requestAnimationFrame(animateMotion);
+                body.style.backgroundColor = "#111";
+                const tests = [
+                    {name:"黑灰白响应 60Hz", mode:"multi-gray", hz:"60Hz速度模式", speed:10},
+                    {name:"黑灰白响应 120Hz", mode:"multi-gray", hz:"120Hz速度模式", speed:18},
+                    {name:"黑灰白响应 240Hz", mode:"multi-gray", hz:"240Hz高速模式", speed:30},
+                    {name:"RGB响应 60Hz", mode:"rgb", hz:"60Hz速度模式", speed:10},
+                    {name:"RGB响应 120Hz", mode:"rgb", hz:"120Hz速度模式", speed:18},
+                    {name:"RGB响应 240Hz", mode:"rgb", hz:"240Hz高速模式", speed:30},
+                    {name:"单高速移动 60Hz", mode:"single", hz:"60Hz速度模式", speed:18},
+                    {name:"单高速移动 120Hz", mode:"single", hz:"120Hz高速模式", speed:36},
+                    {name:"单高速移动 240Hz", mode:"single", hz:"240Hz极速模式", speed:60}
+                ];
+                const blocks=[];
+                const info=document.createElement('div');
+                info.style.cssText='position:absolute;top:20px;left:20px;color:#fff;font-size:18px;z-index:2;line-height:1.6';
+                bgCanvas.appendChild(info);
+                let index=0,lastSwitch=performance.now(),posX=-150;
+                let speedMode=1;
+                function clearBlocks(){ blocks.forEach(b=>b.remove()); blocks.length=0; }
+                function addBlock(color,size,top){
+                    const b=document.createElement('div');
+                    b.className='motion-block';
+                    b.style.width=size+'px';
+                    b.style.height=size+'px';
+                    b.style.background=color;
+                    b.style.left='-120px';
+                    b.style.top=top+'px';
+                    bgCanvas.appendChild(b);
+                    blocks.push(b);
                 }
-                animateMotion();
+                function applyTest(){
+                    clearBlocks();
+                    const h=window.innerHeight;
+                    const w=window.innerWidth;
+                    const center=h/2;
+                    const t=tests[index];
+                    if(t.mode==='multi-gray'){
+                        addBlock('#000',120,center-180);
+                        addBlock('#808080',120,center);
+                        addBlock('#fff',120,center+180);
+                    }else if(t.mode==='rgb'){
+                        addBlock('#f00',120,center-180);
+                        addBlock('#0f0',120,center);
+                        addBlock('#00f',120,center+180);
+                    }else{
+                        addBlock('#fff',120,center);
+                    }
+                    info.innerHTML='动态响应测试<br>'+t.name+'<br>'+t.hz+'<br>观察时间：5秒';
+                    posX=-120;
+                }
+                applyTest();
+                function animateMotion(now){
+                    const t=tests[index];
+                    speedMode=t.speed || 10;
+                    posX+=speedMode;
+                    if(posX>window.innerWidth+200) posX=-120;
+                    blocks.forEach(b=>b.style.left=posX+'px');
+                    if(now-lastSwitch>5000){
+                        index=(index+1)%tests.length;
+                        applyTest();
+                        lastSwitch=now;
+                    }
+                    motionAnimId=requestAnimationFrame(animateMotion);
+                }
+                animateMotion(performance.now());
             }
             else if (scene.patternType === "grid-1px") { bgCanvas.style.backgroundImage = "linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)"; bgCanvas.style.backgroundSize = "2px 2px"; } 
             else if (scene.patternType === "checker") { bgCanvas.style.backgroundImage = "linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, #fff 25%, #fff 75%, #000 75%, #000)"; bgCanvas.style.backgroundSize = "32px 32px"; bgCanvas.style.backgroundPosition = "0 0, 16px 16px"; } 
             else if (scene.patternType === "stripe-h") { bgCanvas.style.backgroundImage = "linear-gradient(#000 50%, #fff 50%)"; bgCanvas.style.backgroundSize = "100% 2px"; } 
             else if (scene.patternType === "stripe-v") { bgCanvas.style.backgroundImage = "linear-gradient(90deg, #000 50%, #fff 50%)"; bgCanvas.style.backgroundSize = "2px 100%"; } 
             else if (scene.patternType === "flash-wb") { body.className = "flash-wb"; } 
-            else if (scene.patternType === "gradient-256") { bgCanvas.style.backgroundImage = "linear-gradient(90deg, #000, #fff)"; } 
+            else if (scene.patternType === "gradient-256") { bgCanvas.style.backgroundImage = generateStepGradient(256); } 
             else if (scene.patternType === "gradient-dark") { bgCanvas.style.backgroundImage = "linear-gradient(90deg, #000, #1a1a1a)"; } 
             else if (scene.patternType === "gradient-bright") { bgCanvas.style.backgroundImage = "linear-gradient(90deg, #e6e6e6, #fff)"; }
         }
@@ -638,7 +729,7 @@ select, button, input {
     });
 
     function hidePanel() { if (window.isTestingMode) return; panel.classList.add('hidden'); isPanelHidden = true; resetWakeBtnTimer(); }
-    function showPanel() { panel.classList.remove('hidden'); wakeBtn.classList.remove('visible'); isPanelHidden = false; if (hideTimeout) clearTimeout(hideTimeout); checkResolution(); }
+    function showPanel() { panel.scrollTop=0; panel.classList.remove('hidden'); wakeBtn.classList.remove('visible'); isPanelHidden = false; if (hideTimeout) clearTimeout(hideTimeout); checkResolution(); }
 
     function resetWakeBtnTimer() {
         if (!isPanelHidden || window.isTestingMode) return; 
