@@ -191,7 +191,6 @@
         .control-panel { padding: 12px; } .preset-grid { gap: 3px; } .rgb-sliders { padding: 5px; gap: 5px; } .slider-group input[type="number"] { width: 32px; font-size: 10px; } select, button { padding: 6px 8px; font-size: 11px; }
     }
 
-/* ===== Final UI readability optimization ===== */
 .control-panel h3 {
     font-size: clamp(22px, 5vw, 25px);
     line-height: 1.35;
@@ -224,10 +223,8 @@
         max-width: 480px;
     }
 }
-/* ===== End final UI optimization ===== */
 
 
-/* ===== Final typography balance optimization ===== */
 body, html {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
     font-weight: 400;
@@ -276,10 +273,8 @@ select, button, input {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-/* ===== End typography optimization ===== */
 
 
-/* ===== Rotation / viewport / panel overflow optimization ===== */
 html, body { min-height: 100%; overflow: hidden; }
 .control-panel {
     max-height: min(92vh, 900px);
@@ -297,13 +292,11 @@ html, body { min-height: 100%; overflow: hidden; }
 @media (orientation: portrait) and (max-height:700px){
  .control-panel{max-height:94vh;}
 }
-/* prevent solid blocks after rotation: force repaint */
 #bg-canvas, body { transform: translateZ(0); }
 
 </style>
 
 <script>
-    /* Core state and display controller */
     'use strict';
 
     const body = document.body;
@@ -380,7 +373,6 @@ html, body { min-height: 100%; overflow: hidden; }
 </script>
 
 <script>
-    /* Color control module */
     function updateRGB(source) {
         if (window.isTestingMode) return; 
         if (source === 'input') {
@@ -489,7 +481,6 @@ window.addEventListener('orientationchange', () => {
 </script>
 
 <script>
-    /* Device compatibility and wake lock module */
     async function syncWakeLock() {
         const needLock = document.fullscreenElement || body.classList.contains('ios-viewport-lock') || window.isTestingMode;
         if (needLock) {
@@ -744,7 +735,6 @@ window.addEventListener('orientationchange', () => {
     updateRGB('slider'); 
 </script>
 <script>
-/* Compatibility patch V2.1 */
 (function(){
 'use strict';
 
