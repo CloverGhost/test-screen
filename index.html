@@ -492,7 +492,7 @@ html, body { min-height: 100%; overflow: hidden; }
             let userW = parseInt(document.getElementById('customW').value, 10);
             let userH = parseInt(document.getElementById('customH').value, 10);
             if (isNaN(userW) || userW < 1) userW = 3840; if (userW > 16384) userW = 16384;
-            if (isNaN(userH) || userH < 1) userH = 2160; if (userH > 16384) userH = 2160;
+            if (isNaN(userH) || userH < 1) userH = 2160; if (userH > 16384) userH = 16384;
             width = userW; height = userH;
         } else {
             const parts = resValue.split('x'); width = parseInt(parts[0], 10); height = parseInt(parts[1], 10); 
